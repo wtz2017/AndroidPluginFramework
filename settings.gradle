@@ -1,0 +1,1 @@
+include ':app', ':plugin_sdk', ':plugin_framework', ':plugin1', ':provided_jars'

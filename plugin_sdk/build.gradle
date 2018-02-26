@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+    compile files('libs/android-support-v4.jar')
+}
+
+// 同步更新jar到目标目录
+task makeJar(type: Copy) {
+    //删除存在的
+    //    delete '../provided_jars/plugin_sdk.jar'
+
+    //设置拷贝的文件目录
+    from('build/intermediates/bundles/default/')
+
+    //打进jar包后的文件目录
+    into('../provided_jars/')
+
+    //将classes.jar放入指定目录下
+    //include ,exclude参数来设置过滤
+    include('classes.jar')
+
+    //重命名
+    rename('classes.jar', 'plugin_sdk.jar')
+}
+
+//makeJar.dependsOn(build)
+// 在终端执行如下命令生成JAR包
+// gradlew :plugin_sdk:makeJar
