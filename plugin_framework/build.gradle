@@ -18,6 +18,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+        }
     }
 }
 
@@ -29,4 +32,51 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
+}
+
+ext {
+    output_jar_name = "framework.jar"
+}
+
+task debug_jar_to_dex(type: Exec) {
+    workingDir '.'
+
+    def jar_path = "build/intermediates/bundles/debug/classes.jar"
+
+    def cmd_jar_to_dex = [
+            "D:/Software/Development/android_sdk/sdk/build-tools/android-4.4.2/dx.bat",
+            "--dex", "--output=" + output_jar_name, jar_path
+    ]
+
+    println ("debug_jar_to_dex...")
+    commandLine cmd_jar_to_dex
+}
+
+task release_jar_to_dex(type: Exec) {
+    workingDir '.'
+
+    def jar_path = "build/intermediates/bundles/default/classes.jar"
+
+    def cmd_jar_to_dex = [
+            "D:/Software/Development/android_sdk/sdk/build-tools/android-4.4.2/dx.bat",
+            "--dex", "--output=" + output_jar_name, jar_path
+    ]
+
+    println ("release_jar_to_dex...")
+    commandLine cmd_jar_to_dex
+}
+
+afterEvaluate {
+    tasks.matching {
+        // 点击菜单 Build->Build APK，通过Gradle Console查看日志，最后一步会执行 assemblexxx 任务
+        it.name.startsWith('assembleDebug') || it.name.startsWith('assembleRelease')
+    }.each { task ->
+        task.doLast {
+            if (it.name.contains("Debug")) {
+                debug_jar_to_dex.execute()
+            } else if (it.name.contains("Release")) {
+                release_jar_to_dex.execute()
+            }
+        }
+    }
 }

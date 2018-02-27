@@ -30,10 +30,11 @@ dependencies {
     compile files('libs/android-support-v4.jar')
 }
 
-// 同步更新jar到目标目录
-task makeJar(type: Copy) {
+// 同步更新jar到目标目录，在终端手动执行如下命令也可以
+// gradlew :plugin_sdk:release_copySdkJar
+task release_copySdkJar(type: Copy) {
     //删除存在的
-    //    delete '../provided_jars/plugin_sdk.jar'
+    //    delete 'plugin_sdk.jar'
 
     //设置拷贝的文件目录
     from('build/intermediates/bundles/default/')
@@ -49,6 +50,36 @@ task makeJar(type: Copy) {
     rename('classes.jar', 'plugin_sdk.jar')
 }
 
-//makeJar.dependsOn(build)
-// 在终端执行如下命令生成JAR包
-// gradlew :plugin_sdk:makeJar
+// gradlew :plugin_sdk:debug_copySdkJar
+task debug_copySdkJar(type: Copy) {
+    //删除存在的
+    //    delete 'plugin_sdk.jar'
+
+    //设置拷贝的文件目录
+    from('build/intermediates/bundles/debug/')
+
+    //打进jar包后的文件目录
+    into('../provided_jars/')
+
+    //将classes.jar放入指定目录下
+    //include ,exclude参数来设置过滤
+    include('classes.jar')
+
+    //重命名
+    rename('classes.jar', 'plugin_sdk.jar')
+}
+
+afterEvaluate {
+    tasks.matching {
+        // 点击菜单 Build->Build APK，通过Gradle Console查看日志，最后一步会执行 assemblexxx 任务
+        it.name.startsWith('assembleDebug') || it.name.startsWith('assembleRelease')
+    }.each { task ->
+        task.doLast {
+            if (it.name.contains("Debug")) {
+                debug_copySdkJar.execute()
+            } else if (it.name.contains("Release")) {
+                release_copySdkJar.execute()
+            }
+        }
+    }
+}
