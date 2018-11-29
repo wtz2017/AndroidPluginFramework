@@ -16,8 +16,25 @@ allprojects {
     repositories {
         jcenter()
     }
+    parseLocalProperties()
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+def parseLocalProperties() {
+    File file = rootProject.file('local.properties')
+    if (file.exists()) {
+
+
+        InputStream inputStream = rootProject.file('local.properties').newDataInputStream();
+        Properties properties = new Properties()
+        properties.load(inputStream)
+
+        if (properties.containsKey("sdk.dir")) {
+            ext.sdk_dir = properties.getProperty("sdk.dir")
+            println "sdk.dir:${rootProject.sdk_dir}"
+        }
+    }
 }

@@ -43,9 +43,10 @@ task debug_jar_to_dex(type: Exec) {
 
     def jar_path = "build/intermediates/bundles/debug/classes.jar"
 
+    def dx_path = "${rootProject.sdk_dir}".replace("\\", "/") + "/build-tools/android-4.4.2/dx.bat"
+
     def cmd_jar_to_dex = [
-            "D:/Software/Development/android_sdk/sdk/build-tools/android-4.4.2/dx.bat",
-            "--dex", "--output=" + output_jar_name, jar_path
+            dx_path, "--dex", "--output=" + output_jar_name, jar_path
     ]
 
     println ("debug_jar_to_dex...")
@@ -57,9 +58,10 @@ task release_jar_to_dex(type: Exec) {
 
     def jar_path = "build/intermediates/bundles/default/classes.jar"
 
+    def dx_path = "${rootProject.sdk_dir}".replace("\\", "/") + "/build-tools/android-4.4.2/dx.bat"
+
     def cmd_jar_to_dex = [
-            "D:/Software/Development/android_sdk/sdk/build-tools/android-4.4.2/dx.bat",
-            "--dex", "--output=" + output_jar_name, jar_path
+            dx_path, "--dex", "--output=" + output_jar_name, jar_path
     ]
 
     println ("release_jar_to_dex...")
